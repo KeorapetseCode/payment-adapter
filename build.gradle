@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.1'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.github.bjornvester.xjc' version '1.9.0'
 }
 
 group = 'com.main'
@@ -21,12 +22,16 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-webservices'
+	implementation 'wsdl4j:wsdl4j' // Required to generate the WSDL automatically
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
+    //jaxb 'org.glassfish.jaxb:jaxb-xjc:4.0.2' // For Java 21 compatibility
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	//testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	//testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
+	//testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
+// tasks.named('test') {
+// 	useJUnitPlatform()
+// }

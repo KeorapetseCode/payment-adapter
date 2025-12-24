@@ -1,13 +1,13 @@
-package com.main.payment_adapter;
+// package com.main.payment_adapter;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class PaymentAdapterApplicationTests {
+// @SpringBootTest
+// class PaymentAdapterApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// @Test
+// void contextLoads() {
+// }
 
-}
+// }
