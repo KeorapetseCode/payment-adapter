@@ -15,10 +15,11 @@ public class WebServiceConfig {
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context) {
+        System.out.println("Test String on Servlet Registration Bean!!!!!!!!!!!!");
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(context);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/ws/*");
+        return new ServletRegistrationBean<>(servlet, "/ws/");
     }
 
     @Bean(name = "payment_adapter") // This creates /ws/payment_adapter.wsdl
@@ -32,7 +33,7 @@ public class WebServiceConfig {
     }
 
     @Bean
-    public XsdSchema paymentsSchema() {
+    public XsdSchema paymentAdapterSchema() {
         return new SimpleXsdSchema(new ClassPathResource("soap-contracts/hello.xsd"));
     }
 }

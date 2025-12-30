@@ -27,11 +27,11 @@ dependencies {
     implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
     //jaxb 'org.glassfish.jaxb:jaxb-xjc:4.0.2' // For Java 21 compatibility
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	//testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	//testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
-	//testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// tasks.named('test') {
-// 	useJUnitPlatform()
-// }
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -5,8 +5,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.example.payments.GetHelloStatusRequest;
-import com.example.payments.GetHelloStatusResponse;
+import api.soap.hello.GetHelloStatusRequest;
+import api.soap.hello.GetHelloStatusResponse;
 
 @Endpoint
 public class HelloSoapEndpoint {
