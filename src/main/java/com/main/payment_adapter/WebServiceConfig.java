@@ -19,7 +19,11 @@ public class WebServiceConfig {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(context);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/ws/");
+        
+        ServletRegistrationBean<MessageDispatcherServlet> registration = 
+            new ServletRegistrationBean<>(servlet, "/ws/*");
+        registration.setLoadOnStartup(1);
+        return registration;
     }
 
     @Bean(name = "payment_adapter") // This creates /ws/payment_adapter.wsdl
