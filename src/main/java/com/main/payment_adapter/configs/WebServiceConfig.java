@@ -1,3 +1,5 @@
+package com.main.payment_adapter.configs;
+
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +21,9 @@ public class WebServiceConfig {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(context);
         servlet.setTransformWsdlLocations(true);
-        
-        ServletRegistrationBean<MessageDispatcherServlet> registration = 
-            new ServletRegistrationBean<>(servlet, "/ws/*");
+
+        ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(servlet,
+                "/ws/*");
         registration.setLoadOnStartup(1);
         return registration;
     }

@@ -9,7 +9,7 @@ import api.soap.hello.GetHelloStatusRequest;
 import api.soap.hello.GetHelloStatusResponse;
 
 @Endpoint
-public class HelloSoapEndpoint {
+public class MainSoapEndpoint {
 
     private static final String NAMESPACE_URI = "http://api/soap/hello";
 
@@ -21,6 +21,7 @@ public class HelloSoapEndpoint {
         GetHelloStatusResponse response = new GetHelloStatusResponse();
 
         // Logic to check status (e.g., from Yoco or PayPal)
+        System.out.println("Received GreetId!!: " + request.getGreetId());
         response.setGreetStatus("PROCESSED for GreetId: " + request.getGreetId());
 
         return response;
