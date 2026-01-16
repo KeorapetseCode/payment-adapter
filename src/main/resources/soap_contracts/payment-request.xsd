@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://api/soap/payment" 
+           xmlns:tns="http://api/soap/payment"
+           elementFormDefault="qualified">
+
+    <!-- Payment Request -->
+    <xs:element name="paymentRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- Transaction Information -->
+                <xs:element name="transactionId" type="tns:transactionIdType" />
+                <xs:element name="timestamp" type="xs:dateTime" />
+                <xs:element name="amount" type="tns:amountType" />
+                <xs:element name="currency" type="tns:currencyType" />
+                <xs:element name="description" type="xs:string" minOccurs="0" />
+                
+                <!-- Payment Card Information (Encrypted/Tokenized) -->
+                <xs:element name="paymentCard" type="tns:paymentCardType" />
+                
+                <!-- Customer Information (Minimal for privacy) -->
+                <xs:element name="customer" type="tns:customerType" minOccurs="0" />
+                
+                <!-- Merchant Information -->
+                <xs:element name="merchant" type="tns:merchantType" />
+                
+                <!-- Security & Device Information -->
+                <xs:element name="securityContext" type="tns:securityContextType" />
+                
+                <!-- NFC/Mobile specific fields -->
+                <xs:element name="mobileContext" type="tns:mobileContextType" minOccurs="0" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Payment Response -->
+    <xs:element name="paymentResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="transactionId" type="tns:transactionIdType" />
+                <xs:element name="status" type="tns:paymentStatusType" />
+                <xs:element name="authorizationCode" type="xs:string" minOccurs="0" />
+                <xs:element name="processorTransactionId" type="xs:string" minOccurs="0" />
+                <xs:element name="timestamp" type="xs:dateTime" />
+                <xs:element name="message" type="xs:string" minOccurs="0" />
+                <xs:element name="receipt" type="tns:receiptType" minOccurs="0" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Complex Types -->
+    
+    <!-- Payment Card Type with security considerations -->
+    <xs:complexType name="paymentCardType">
+        <xs:sequence>
+            <!-- Encrypted or tokenized card number -->
+            <xs:element name="cardToken" type="tns:encryptedFieldType" />
+            <!-- Encrypted expiry date -->
+            <xs:element name="expiryDate" type="tns:encryptedFieldType" />
+            <!-- Encrypted CVV -->
+            <xs:element name="cvv" type="tns:encryptedFieldType" />
+            <!-- Cardholder name (can be encrypted) -->
+            <xs:element name="cardholderName" type="tns:encryptedFieldType" minOccurs="0" />
+            <!-- Card type/brand -->
+            <xs:element name="cardType" type="tns:cardTypeEnum" />
+            <!-- Last 4 digits for display purposes -->
+            <xs:element name="maskedPan" type="tns:maskedPanType" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Encrypted Field Type for sensitive data -->
+    <xs:complexType name="encryptedFieldType">
+        <xs:sequence>
+            <xs:element name="encryptedValue" type="xs:base64Binary" />
+            <xs:element name="keyId" type="xs:string" />
+            <xs:element name="algorithm" type="tns:encryptionAlgorithmType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Customer Information -->
+    <xs:complexType name="customerType">
+        <xs:sequence>
+            <xs:element name="customerId" type="xs:string" minOccurs="0" />
+            <xs:element name="email" type="tns:emailType" minOccurs="0" />
+            <xs:element name="phone" type="xs:string" minOccurs="0" />
+            <xs:element name="billingAddress" type="tns:addressType" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Merchant Information -->
+    <xs:complexType name="merchantType">
+        <xs:sequence>
+            <xs:element name="merchantId" type="xs:string" />
+            <xs:element name="merchantName" type="xs:string" />
+            <xs:element name="merchantCategory" type="xs:string" minOccurs="0" />
+            <xs:element name="terminalId" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Security Context -->
+    <xs:complexType name="securityContextType">
+        <xs:sequence>
+            <!-- Session/request authentication -->
+            <xs:element name="sessionToken" type="xs:string" />
+            <!-- Digital signature for request integrity -->
+            <xs:element name="requestSignature" type="xs:base64Binary" />
+            <!-- Timestamp for replay attack prevention -->
+            <xs:element name="nonce" type="xs:string" />
+            <!-- Client IP for fraud detection -->
+            <xs:element name="clientIp" type="xs:string" minOccurs="0" />
+            <!-- 3D Secure information if applicable -->
+            <xs:element name="threeDSecure" type="tns:threeDSecureType" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Mobile/NFC Context -->
+    <xs:complexType name="mobileContextType">
+        <xs:sequence>
+            <xs:element name="deviceId" type="xs:string" />
+            <xs:element name="appVersion" type="xs:string" />
+            <xs:element name="platform" type="tns:mobilePlatformType" />
+            <xs:element name="nfcEnabled" type="xs:boolean" minOccurs="0" />
+            <xs:element name="deviceFingerprint" type="xs:string" minOccurs="0" />
+            <xs:element name="geolocation" type="tns:geolocationaType" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- 3D Secure Information -->
+    <xs:complexType name="threeDSecureType">
+        <xs:sequence>
+            <xs:element name="eci" type="xs:string" minOccurs="0" />
+            <xs:element name="cavv" type="xs:string" minOccurs="0" />
+            <xs:element name="xid" type="xs:string" minOccurs="0" />
+            <xs:element name="enrolled" type="xs:boolean" minOccurs="0" />
+            <xs:element name="authenticationStatus" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Address Type -->
+    <xs:complexType name="addressType">
+        <xs:sequence>
+            <xs:element name="street" type="xs:string" minOccurs="0" />
+            <xs:element name="city" type="xs:string" minOccurs="0" />
+            <xs:element name="state" type="xs:string" minOccurs="0" />
+            <xs:element name="postalCode" type="xs:string" minOccurs="0" />
+            <xs:element name="country" type="tns:countryCodeType" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Geolocation Type -->
+    <xs:complexType name="geolocationaType">
+        <xs:sequence>
+            <xs:element name="latitude" type="xs:decimal" />
+            <xs:element name="longitude" type="xs:decimal" />
+            <xs:element name="accuracy" type="xs:decimal" minOccurs="0" />
+            <xs:element name="timestamp" type="xs:dateTime" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Receipt Type -->
+    <xs:complexType name="receiptType">
+        <xs:sequence>
+            <xs:element name="receiptId" type="xs:string" />
+            <xs:element name="transactionDate" type="xs:dateTime" />
+            <xs:element name="amount" type="tns:amountType" />
+            <xs:element name="currency" type="tns:currencyType" />
+            <xs:element name="maskedPan" type="tns:maskedPanType" />
+            <xs:element name="authorizationCode" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Simple Types and Enumerations -->
+    
+    <!-- Transaction ID with pattern validation -->
+    <xs:simpleType name="transactionIdType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Amount with precision for financial calculations -->
+    <xs:simpleType name="amountType">
+        <xs:restriction base="xs:decimal">
+            <xs:fractionDigits value="2" />
+            <xs:minInclusive value="0.01" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- ISO 4217 Currency Code -->
+    <xs:simpleType name="currencyType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]{3}" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Country Code ISO 3166-1 alpha-2 -->
+    <xs:simpleType name="countryCodeType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]{2}" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Email validation -->
+    <xs:simpleType name="emailType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Masked PAN (shows only last 4 digits) -->
+    <xs:simpleType name="maskedPanType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\*{4,12}\d{4}" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Card Type Enumeration -->
+    <xs:simpleType name="cardTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="VISA" />
+            <xs:enumeration value="MASTERCARD" />
+            <xs:enumeration value="AMEX" />
+            <xs:enumeration value="DISCOVER" />
+            <xs:enumeration value="DINERS" />
+            <xs:enumeration value="JCB" />
+            <xs:enumeration value="UNIONPAY" />
+            <xs:enumeration value="UNKNOWN" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Payment Status -->
+    <xs:simpleType name="paymentStatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="APPROVED" />
+            <xs:enumeration value="DECLINED" />
+            <xs:enumeration value="ERROR" />
+            <xs:enumeration value="PENDING" />
+            <xs:enumeration value="CANCELLED" />
+            <xs:enumeration value="REQUIRES_3DS" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Encryption Algorithm -->
+    <xs:simpleType name="encryptionAlgorithmType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AES-256-GCM" />
+            <xs:enumeration value="RSA-2048" />
+            <xs:enumeration value="RSA-4096" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Mobile Platform -->
+    <xs:simpleType name="mobilePlatformType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="iOS" />
+            <xs:enumeration value="Android" />
+            <xs:enumeration value="Windows" />
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
