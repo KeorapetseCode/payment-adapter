@@ -2,28 +2,20 @@ package com.main.payment_adapter.payment_providers.interfaces;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
- * Payment Response
- * Contains the result of a payment processing operation
+ * Simple Payment Response for NFC retail scanner
  */
 public class PaymentResponse {
 
     private String transactionId;
     private PaymentStatus status;
     private String authorizationCode;
-    private String processorTransactionId;
-    private LocalDateTime timestamp;
     private String message;
-    // private Receipt receipt;
-    private String providerName;
+    private LocalDateTime timestamp;
     private BigDecimal processedAmount;
     private String currency;
-    private String failureReason;
-    private String failureCode;
-    private Map<String, String> additionalData;
-    // private ThreeDSecureResult threeDSecureResult;
+    private String maskedPan; // For receipt display
 
     // Constructors
     public PaymentResponse() {
@@ -45,7 +37,7 @@ public class PaymentResponse {
 
     public static PaymentResponse declined(String transactionId, String reason) {
         PaymentResponse response = new PaymentResponse(transactionId, PaymentStatus.DECLINED);
-        response.setFailureReason(reason);
+        response.setMessage(reason);
         return response;
     }
 
@@ -80,22 +72,6 @@ public class PaymentResponse {
         this.authorizationCode = authorizationCode;
     }
 
-    public String getProcessorTransactionId() {
-        return processorTransactionId;
-    }
-
-    public void setProcessorTransactionId(String processorTransactionId) {
-        this.processorTransactionId = processorTransactionId;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -104,20 +80,12 @@ public class PaymentResponse {
         this.message = message;
     }
 
-    public Receipt getReceipt() {
-        return receipt;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setReceipt(Receipt receipt) {
-        this.receipt = receipt;
-    }
-
-    public String getProviderName() {
-        return providerName;
-    }
-
-    public void setProviderName(String providerName) {
-        this.providerName = providerName;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public BigDecimal getProcessedAmount() {
@@ -136,45 +104,17 @@ public class PaymentResponse {
         this.currency = currency;
     }
 
-    public String getFailureReason() {
-        return failureReason;
+    public String getMaskedPan() {
+        return maskedPan;
     }
 
-    public void setFailureReason(String failureReason) {
-        this.failureReason = failureReason;
+    public void setMaskedPan(String maskedPan) {
+        this.maskedPan = maskedPan;
     }
-
-    public String getFailureCode() {
-        return failureCode;
-    }
-
-    public void setFailureCode(String failureCode) {
-        this.failureCode = failureCode;
-    }
-
-    public Map<String, String> getAdditionalData() {
-        return additionalData;
-    }
-
-    public void setAdditionalData(Map<String, String> additionalData) {
-        this.additionalData = additionalData;
-    }
-
-    // public ThreeDSecureResult getThreeDSecureResult() {
-    // return threeDSecureResult;
-    // }
-
-    // public void setThreeDSecureResult(ThreeDSecureResult threeDSecureResult) {
-    // this.threeDSecureResult = threeDSecureResult;
-    // }
 
     // Convenience methods
     public boolean isSuccessful() {
         return status == PaymentStatus.APPROVED;
-    }
-
-    public boolean requiresThreeDSecure() {
-        return status == PaymentStatus.REQUIRES_3DS;
     }
 
     @Override
@@ -183,7 +123,6 @@ public class PaymentResponse {
                 "transactionId='" + transactionId + '\'' +
                 ", status=" + status +
                 ", authorizationCode='" + authorizationCode + '\'' +
-                ", providerName='" + providerName + '\'' +
                 '}';
     }
 }

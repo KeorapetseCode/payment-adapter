@@ -1,13 +1,11 @@
 package com.main.payment_adapter.payment_providers.interfaces;
 
 /**
- * Payment Processing Exception
- * Thrown when payment processing fails
+ * Simple Payment Processing Exception for NFC retail scanner
  */
 public class PaymentProcessingException extends Exception {
 
     private String errorCode;
-    private String providerErrorCode;
     private PaymentStatus status;
 
     public PaymentProcessingException(String message) {
@@ -37,19 +35,11 @@ public class PaymentProcessingException extends Exception {
         this.errorCode = errorCode;
     }
 
-    public String getProviderErrorCode() {
-        return providerErrorCode;
-    }
-
-    public void setProviderErrorCode(String providerErrorCode) {
-        this.providerErrorCode = providerErrorCode;
-    }
-
     public PaymentStatus getStatus() {
         return status;
     }
 
     public void setStatus(PaymentStatus status) {
         this.status = status;
-    }\n
+    }
 }

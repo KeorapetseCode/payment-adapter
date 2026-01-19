@@ -28,17 +28,28 @@ public class PaymentOrchestrator {
         PaymentProvider provider = providers.get(activeProvider.toUpperCase());
 
         if (provider == null) {
-            throw new RuntimeException("Configured payment provider not found: " + activeProvider);
+            throw new PaymentProcessingException("Configured payment provider not found: " + activeProvider);
         }
+
         // Check provider availability
-        // if provider is not available throw the appropriate exception
-        // else provider is available process the payment
         if (!provider.isAvailable()) {
+            // If provider is not available throw the appropriate exception
             throw new PaymentProcessingException(
-                    "Payment provider " + provider.getProviderName() + " is currently unavailable."
-            // get error codes from provider if available
-            );
+                    "Payment provider " + provider.getProviderName() + " is currently unavailable",
+                    "PROVIDER_UNAVAILABLE");
         }
-        return provider.processPayment(request);
+
+        // Provider is available, process the payment
+        try {
+            return provider.process(request);
+        } catch (PaymentProcessingException e) {
+            // Re-throw with additional context if needed
+            throw e;
+        } catch (Exception e) {
+            // Handle unexpected exceptions
+            throw new PaymentProcessingException(
+                    "Unexpected error processing payment with provider: " + provider.getProviderName(),
+                    e);
+        }
     }
 }
