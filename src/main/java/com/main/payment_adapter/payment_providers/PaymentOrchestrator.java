@@ -41,7 +41,12 @@ public class PaymentOrchestrator {
 
         // Provider is available, process the payment
         try {
-            return provider.process(request);
+            PaymentResponse response = provider.process(request);
+            // Set the provider name in the response for tracking
+            if (response != null) {
+                response.setProviderName(provider.getProviderName());
+            }
+            return response;
         } catch (PaymentProcessingException e) {
             // Re-throw with additional context if needed
             throw e;
