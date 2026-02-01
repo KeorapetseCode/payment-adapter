@@ -1,0 +1,60 @@
+package com.main.payment_adapter.payment_providers;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.main.payment_adapter.payment_providers.interfaces.PaymentProcessingException;
+import com.main.payment_adapter.payment_providers.interfaces.PaymentProvider;
+import com.main.payment_adapter.payment_providers.interfaces.PaymentRequest;
+import com.main.payment_adapter.payment_providers.interfaces.PaymentResponse;
+
+@Component
+public class PaymentOrchestrator {
+
+    @Value("${payment.provider.active}")
+    private String activeProvider;
+
+    private final Map<String, PaymentProvider> providers;
+
+    // Spring injects all beans that implement PaymentProvider into this map
+    public PaymentOrchestrator(Map<String, PaymentProvider> providers) {
+        this.providers = providers;
+    }
+
+    public PaymentResponse execute(PaymentRequest request) throws PaymentProcessingException {
+        // Looks up the bean by name (e.g., "PAYPAL" or "PAYFAST")
+        PaymentProvider provider = providers.get(activeProvider.toUpperCase());
+
+        if (provider == null) {
+            throw new PaymentProcessingException("Configured payment provider not found: " + activeProvider);
+        }
+
+        // Check provider availability
+        if (!provider.isAvailable()) {
+            // If provider is not available throw the appropriate exception
+            throw new PaymentProcessingException(
+                    "Payment provider " + provider.getProviderName() + " is currently unavailable",
+                    "PROVIDER_UNAVAILABLE");
+        }
+
+        // Provider is available, process the payment
+        try {
+            PaymentResponse response = provider.process(request);
+            // Set the provider name in the response for tracking
+            if (response != null) {
+                response.setProviderName(provider.getProviderName());
+            }
+            return response;
+        } catch (PaymentProcessingException e) {
+            // Re-throw with additional context if needed
+            throw e;
+        } catch (Exception e) {
+            // Handle unexpected exceptions
+            throw new PaymentProcessingException(
+                    "Unexpected error processing payment with provider: " + provider.getProviderName(),
+                    e);
+        }
+    }
+}
