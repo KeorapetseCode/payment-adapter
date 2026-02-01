@@ -10,6 +10,7 @@ public class PaymentResponse {
 
     private String transactionId;
     private PaymentStatus status;
+    private String providerName;
     private String authorizationCode;
     private String message;
     private LocalDateTime timestamp;
@@ -58,6 +59,14 @@ public class PaymentResponse {
 
     public PaymentStatus getStatus() {
         return status;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
     }
 
     public void setStatus(PaymentStatus status) {
