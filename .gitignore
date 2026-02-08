@@ -33,6 +33,7 @@ src/main/java/api/soap/*
 *.zip
 *.tar.gz
 *.rar
+*.env
 hs_err_pid*
 
 
