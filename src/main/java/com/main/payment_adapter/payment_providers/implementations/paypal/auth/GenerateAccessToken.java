@@ -1,5 +1,6 @@
 package com.main.payment_adapter.payment_providers.implementations.paypal.auth;
 
+import com.main.payment_adapter.payment_providers.interfaces.PaymentProvidersURLs;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -10,13 +11,14 @@ import java.util.Base64;
 @Service
 public class GenerateAccessToken {
 
-    private final String PAYPAL_URL = "https://api-m.sandbox.paypal.com/v1/oauth2/token";
-
     @org.springframework.beans.factory.annotation.Value("${paypal.client.id}")
     private String CLIENT_ID;
 
     @org.springframework.beans.factory.annotation.Value("${paypal.client.secret}")
     private String CLIENT_SECRET;
+
+    @org.springframework.beans.factory.annotation.Value("${paypal.production}")
+    private boolean isProduction;
 
     public String getAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
@@ -36,8 +38,11 @@ public class GenerateAccessToken {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
         // 4. Execute POST request
+        String paypalTokenUrl = PaymentProvidersURLs.getPayPalUrl(
+                PaymentProvidersURLs.PAYPAL_OAUTH_TOKEN_ENDPOINT,
+                isProduction);
         ResponseEntity<String> response = restTemplate.postForEntity(
-                PAYPAL_URL,
+                paypalTokenUrl,
                 request,
                 String.class);
 
@@ -46,6 +51,7 @@ public class GenerateAccessToken {
             String responseBody = response.getBody();
             // Simple parsing, consider using Jackson or Gson for production
             String accessToken = null;
+            
             int start = responseBody.indexOf("\"access_token\":\"") + 16;
             int end = responseBody.indexOf("\"", start);
             if (start > 15 && end > start) {
