@@ -1,5 +1,6 @@
 package com.main.payment_adapter.payment_providers.implementations.paypal.auth;
 
+import com.main.payment_adapter.payment_providers.implementations.paypal.interfaces.GenerateAcessTokenResponse;
 import com.main.payment_adapter.payment_providers.interfaces.PaymentProvidersURLs;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -41,23 +42,16 @@ public class GenerateAccessToken {
         String paypalTokenUrl = PaymentProvidersURLs.getPayPalUrl(
                 PaymentProvidersURLs.PAYPAL_OAUTH_TOKEN_ENDPOINT,
                 isProduction);
-        ResponseEntity<String> response = restTemplate.postForEntity(
+        ResponseEntity<GenerateAcessTokenResponse> response = restTemplate.postForEntity(
                 paypalTokenUrl,
                 request,
-                String.class);
+                GenerateAcessTokenResponse.class);
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            // Parse access_token from JSON response
-            String responseBody = response.getBody();
-            // Simple parsing, consider using Jackson or Gson for production
-            String accessToken = null;
+            GenerateAcessTokenResponse tokenResponse = response.getBody();
+            String accessToken = tokenResponse.get_access_token();
             
-            int start = responseBody.indexOf("\"access_token\":\"") + 16;
-            int end = responseBody.indexOf("\"", start);
-            if (start > 15 && end > start) {
-                accessToken = responseBody.substring(start, end);
-            }
-            if (accessToken != null) {
+            if (accessToken != null && !accessToken.isEmpty()) {
                 return accessToken;
             } else {
                 throw new RuntimeException("Access token not found in response");
