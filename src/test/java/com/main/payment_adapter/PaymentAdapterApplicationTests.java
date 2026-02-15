@@ -30,20 +30,22 @@ class PaymentAdapterApplicationTests {
 
         clientId = properties.getProperty("paypal.sandbox.client-id");
         clientSecret = properties.getProperty("paypal.sandbox.client-secret");
-        System.out.println("Loaded PayPal Credsentials from application.properties: clientId=" + clientId
-                + ", clientSecret=" + clientSecret);
+        // System.out.println("Loaded PayPal Credentials from application.properties:
+        // clientId=" + clientId
+        // + ", clientSecret=" + clientSecret);
 
         ReflectionTestUtils.setField(generateAccessToken, "CLIENT_ID", clientId);
-        ReflectionTestUtils.setField(generateAccessToken, "CLIENT_SECRET", clientSecret);
+        ReflectionTestUtils.setField(generateAccessToken, "CLIENT_SECRET",
+                clientSecret);
         ReflectionTestUtils.setField(generateAccessToken, "isProduction", false);
     }
 
     @Test
     void testGetAccessTokenFromPayPalSandbox() {
         if (clientId == null || clientSecret == null) {
-            System.out.println("Skipping test: PayPal sandbox credentials not found in application.properties");
+            System.out.println("Skipping test: PayPal sandbox credentials not found");
             System.out.println(
-                    "Please set paypal.sandbox.client-id and paypal.sandbox.client-secret in application.properties");
+                    "Please set paypal.sandbox.client-id and paypal.sandbox.client-secret in application.properties or as environment variables");
             return;
         }
 
