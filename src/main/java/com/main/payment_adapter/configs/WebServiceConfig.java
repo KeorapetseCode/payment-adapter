@@ -17,7 +17,6 @@ public class WebServiceConfig {
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext context) {
-        System.out.println("Test String on Servlet Registration Bean!!!!!!!!!!!!");
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(context);
         servlet.setTransformWsdlLocations(true);
