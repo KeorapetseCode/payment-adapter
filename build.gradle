@@ -21,12 +21,63 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.boot:spring-boot-starter-webservices'
+	implementation 'wsdl4j:wsdl4j' // Required to generate the WSDL automatically
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
+    implementation 'org.glassfish.jaxb:jaxb-xjc:4.0.5' // For Java 21 compatibility and code generation
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// Configure directories for generated sources
+def generatedSourcesDir = file("${buildDir}/generated-sources/jaxb")
+def javaSourceDir = file("src/main/java")
+
+// JAXB code generation task
+task generateJaxb(type: Exec) {
+    description = 'Generates Java classes from XSD schemas'
+    group = 'build'
+    
+    inputs.files fileTree('src/main/resources/soap-contracts').include('**/*.xsd')
+    outputs.dir generatedSourcesDir
+    
+    doFirst {
+        generatedSourcesDir.mkdirs()
+        // Clean existing generated files in src/main/java
+        delete fileTree(javaSourceDir).matching {
+            include 'api/soap/**/*.java'
+        }
+    }
+    
+    commandLine 'java', '-classpath', configurations.runtimeClasspath.asPath, 
+                'com.sun.tools.xjc.XJCFacade',
+                '-d', javaSourceDir.absolutePath,
+                '-p', 'api.soap.hello',
+                'src/main/resources/soap-contracts/hello.xsd'
+}
+
+// Add generated sources to source sets
+sourceSets {
+    main {
+        java {
+            srcDir generatedSourcesDir
+        }
+    }
+}
+
+// Make compileJava depend on JAXB generation
+compileJava.dependsOn generateJaxb
+
+// Configure clean task to remove generated files
+clean {
+    delete fileTree(javaSourceDir).matching {
+        include 'api/soap/**/*.java'
+    }
+    delete generatedSourcesDir
+}
+
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
