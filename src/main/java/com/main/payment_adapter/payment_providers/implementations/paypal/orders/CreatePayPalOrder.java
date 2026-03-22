@@ -2,6 +2,7 @@ package com.main.payment_adapter.payment_providers.implementations.paypal.orders
 
 import org.springframework.web.client.RestTemplate;
 import com.main.payment_adapter.payment_providers.interfaces.PaymentProvidersURLs;
+import com.main.payment_adapter.payment_providers.implementations.paypal.interfaces.CreateOrderResponse;
 
 import org.springframework.http.*;
 
@@ -15,7 +16,7 @@ public class CreatePayPalOrder {
     @org.springframework.beans.factory.annotation.Value("${paypal.production}")
     private boolean isProduction;
 
-    public String createOrder(String orderBody, String accessToken) {
+    public CreateOrderResponse createOrder(String orderBody, String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
         // Debug: Print credentials (safely)
@@ -48,18 +49,19 @@ public class CreatePayPalOrder {
                 PaymentProvidersURLs.PAYPAL_ORDERS_ENDPOINT,
                 isProduction);
 
-        // Debug: Print request details
-        System.out.println("Requesting PayPal order creation from URL: " + paypalOrdersUrl);
-        System.out.println("Request Headers: " + headers);
-        System.out.println("Request Body: " + body);
-
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(
+            ResponseEntity<CreateOrderResponse> response = restTemplate.postForEntity(
                     paypalOrdersUrl,
                     request,
-                    String.class);
+                    CreateOrderResponse.class);
 
-            return response.getBody();
+            CreateOrderResponse orderResponse = response.getBody();
+            if (orderResponse != null) {
+                System.out.println("Order ID: " + orderResponse.getId());
+                System.out.println("Order Status: " + orderResponse.getStatus());
+            }
+
+            return orderResponse;
         } catch (Exception e) {
             System.err.println("Error creating PayPal order: " + e.getMessage());
             return null;

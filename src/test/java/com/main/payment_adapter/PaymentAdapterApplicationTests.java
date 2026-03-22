@@ -2,6 +2,7 @@ package com.main.payment_adapter;
 
 import com.main.payment_adapter.payment_providers.implementations.paypal.auth.GenerateAccessToken;
 import com.main.payment_adapter.payment_providers.implementations.paypal.orders.CreatePayPalOrder;
+import com.main.payment_adapter.payment_providers.implementations.paypal.interfaces.CreateOrderResponse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -101,15 +102,11 @@ class PaymentAdapterApplicationTests {
           }
         }
         """;
+    CreateOrderResponse payPalOrderResults = new CreatePayPalOrder().createOrder(orderBody, accessToken);
 
-    // System.out.print(orderBody);
-    // System.out.println(accessToken);
-    String createPayPalOrderResults = new CreatePayPalOrder().createOrder(orderBody, accessToken);
-
-    assertNotNull(createPayPalOrderResults, "CreatePayPalOrder result should not be null");
+    assertNotNull(payPalOrderResults, "CreatePayPalOrder result should not be null");
 
     System.out.println("Successfully created PayPal order: ");
-    System.out.print(createPayPalOrderResults);
 
     return;
   }
