@@ -1,5 +1,9 @@
 # payment-adapter
 
+## Config: Environment Variables
+**Please Note:** API provider keys and credentials must be configured in `application.properties` before running tests or starting the application locally.
+
+
 ## Development Commands
 
 ### Running Tests
