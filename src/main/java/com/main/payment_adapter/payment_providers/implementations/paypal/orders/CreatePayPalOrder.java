@@ -19,13 +19,6 @@ public class CreatePayPalOrder {
     public CreateOrderResponse createOrder(String orderBody, String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // Debug: Print credentials (safely)
-        // System.out.println("CLIENT_ID: " + (CLIENT_ID != null ?
-        // CLIENT_ID.substring(0, 8) + "..." : "null"));
-        // System.out.println("CLIENT_SECRET: " + (CLIENT_SECRET != null ? "***set***" :
-        // "null"));
-        // System.out.println("isProduction: " + isProduction);
-
         // 1. Set up Headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
