@@ -28,4 +28,7 @@
 
 # Clean and build
 ./gradlew clean build
+
+# Build without running test script
+./gradlew build -x test
 ```
